@@ -1,19 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class networkManager : MonoBehaviour
+public class NetworkManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //instance
+    public static NetworkManager instance;
+
+    void Awake()
     {
-        
+        // if an instance already exists and it's not this one - destroy us
+        if (instance != null && instance != this)
+            gameObject.SetActive(false);
+        else
+        {
+            // set the instance
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-        
-
+        PhotonNetwork.ConnectUsingSettings();
     }
 }
