@@ -1,4 +1,6 @@
-﻿using Photon.Pun;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class NetworkManager : MonoBehaviour
