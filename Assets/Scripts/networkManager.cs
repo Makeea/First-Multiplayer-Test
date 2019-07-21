@@ -27,11 +27,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
+   
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("Connected to master Server");
+        CreateRoom("testroom");
+
+    }
+
+    //Attempts to Create a room
     public void CreateRoom (string roomName)
     {
         PhotonNetwork.CreateRoom(roomName);
     }
+    public override void OnCreatedRoom()
+    {
+        Debug.Log("Created Room:  " + PhotonNetwork.CurrentRoom.Name);
 
+    }
     public void JoinRoom(string roomName)
     {
         PhotonNetwork.JoinRoom(roomName);
