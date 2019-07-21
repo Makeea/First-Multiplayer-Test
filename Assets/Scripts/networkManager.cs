@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -22,5 +23,20 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
+    }
+
+    public void CreateRoom (string roomName)
+    {
+        PhotonNetwork.CreateRoom(roomName);
+    }
+
+    public void JoinRoom(string roomName)
+    {
+        PhotonNetwork.JoinRoom(roomName);
+    }
+
+    public void ChangeScene(string sceneName)
+    {
+        PhotonNetwork.LoadLevel(sceneName);
     }
 }
