@@ -52,5 +52,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         // add PlayerControllor script to each player
         PlayerControllor playerScript = playerObj.GetComponent<PlayerControllor>();
+
+        // initialize the player
+        playerScript.photonView.RPC("Initialize", RpcTargets.All, PhotonNetwork.LocalPlayer);
+    }
+
+    public PlayerController GetPlayer(int playerId)
+    {
+        return players.First(x => x.id == playerId);
+    }
+
+    public PlayerController GetPlayer(GameObject playerObject)
+    {
+        return players.First(x => x.gameObject == playerObject);
     }
 }

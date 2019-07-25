@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerControllor : MonoBehaviour
+public class PlayerControllor : MonoBehaviourPunCallbacks
 {
     [HideInInspector]
     public int id;
@@ -20,6 +20,21 @@ public class PlayerControllor : MonoBehaviour
     [Header("Components")]
     public Rigidbody rig;
     public Player photonPlayer;
+
+    [PunRPC]
+
+    public void Initialized( Player player)
+    {
+        photonPlayer = player;
+        id = player.ActorNumber;
+
+        GameManager.instance.players[id - 1] = this;
+
+        // first player gets the hat
+
+        if (!photonView.IsMine)
+            rig.isKinematic = true;
+    }
 
     private void Update()
     {

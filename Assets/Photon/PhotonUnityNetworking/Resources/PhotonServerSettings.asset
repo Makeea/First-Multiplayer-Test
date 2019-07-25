@@ -31,5 +31,7 @@ MonoBehaviour:
   RpcList:
   - ChangeScene
   - UpdateLobbyUI
+  - ImInGame
+  - Initialized
   DisableAutoOpenWizard: 1
   ShowSettings: 0
