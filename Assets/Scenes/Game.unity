@@ -870,3 +870,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d2f5645de9aeb44eb80ead3ea5d055e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
+  moveSpeed: 5
+  jumpSpeed: 8
+  hatObject: {fileID: 188727065}
+  curHatTime: 0
+  rig: {fileID: 1872206504}

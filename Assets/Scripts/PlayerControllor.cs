@@ -21,5 +21,32 @@ public class PlayerControllor : MonoBehaviour
     public Rigidbody rig;
     public Player photonPlayer;
 
+    private void Update()
+    {
+        Move();
 
+        if (Input.GetKeyDown(KeyCode.Space))
+            TryJump();
+    }
+
+    private void Move()
+    {
+        float x = Input.GetAxis("Horizontal") * moveSpeed;
+        float z = Input.GetAxis("Vertical") * moveSpeed;
+
+        rig.velocity = new Vector3(x, rig.velocity.y, z);
+    }
+
+    // are we on the ground and if so jump
+    void TryJump()
+    {
+        // raycase that shoots below us
+        Ray ray = new Ray(transform.position, Vector3.down);
+
+        // if we hit something then we are on ground - start jumping
+        if(Physics.Raycast(ray, 0.7f))
+        {
+            rig.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+        }
+    }
 }
