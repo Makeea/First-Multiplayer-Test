@@ -17,7 +17,7 @@ public class Menu : MonoBehaviourPunCallbacks
     public Button joinRoomButton;
 
     [Header("Lobby Screen")]
-    public TextMeshProUGUI platerListText;
+    public TextMeshProUGUI playerListText;
     public Button startGameButton;
 
      void Start()
@@ -51,5 +51,53 @@ public class Menu : MonoBehaviourPunCallbacks
        public void OnJoinRoomButton(TMP_InputField roomNameInput)
     {
         NetworkManager.instance.JoinRoom(roomNameInput.text);
+    }
+
+    public void OnPlayerNameUpdate(TMP_InputField playerNameInput)
+    {
+        PhotonNetwork.NickName = playerNameInput.text;
+    }
+
+    //join a room
+    public override void OnJoinedRoom()
+    {
+        SetScreen(lobbyScreen);
+        photonView.RPC("UpdateLobbyUI", RpcTarget.All);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UpdateLobbyUI();
+    }
+
+    //updates the lobby to show player list and host buttons
+    [PunRPC]
+    public void UpdateLobbyUI()
+    {
+        playerListText.text = "";
+
+        // show all players in the lobby
+        foreach( Player player in PhotonNetwork.PlayerList)
+        {
+            playerListText.text += player.NickName + "\n";
+        }
+
+        //host starts game
+        if (PhotonNetwork.IsMasterClient)
+            startGameButton.interactable = true;
+        else
+            startGameButton.interactable = false;
+    }
+
+    //leave lobby button pressed
+    public void OnLeaveLobbyButton()
+    {
+        PhotonNetwork.LeaveLobby();
+        SetScreen(mainScreen);       
+    }
+
+    public void OnStartGameButton()
+    {
+        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "Game");
     }
 }
