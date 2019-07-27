@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerControllor : MonoBehaviourPunCallbacks
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [HideInInspector]
     public int id;
