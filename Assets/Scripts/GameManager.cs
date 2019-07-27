@@ -86,4 +86,20 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (Time.time > hatPickupTime + invincibleDuration) return true;
         else return false;
     }
+
+    [PunRPC]
+    void GameWon(int playerId)
+    {
+        gameEnded = true;
+        PlayerController player = GetPlayer(playerId);
+        //show who won
+
+        Invoke("GoBackToMenu", 3.0f);
+    }
+
+    void GoBackToMenu ()
+    {
+        PhotonNetwork.LeaveRoom();
+        NetworkManager.instance.ChangeScene("Menu");
+    }
 }
