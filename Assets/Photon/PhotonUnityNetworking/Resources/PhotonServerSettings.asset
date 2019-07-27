@@ -35,5 +35,6 @@ MonoBehaviour:
   - Initialized
   - Initialize
   - GiveHat
+  - GameWon
   DisableAutoOpenWizard: 1
   ShowSettings: 0
