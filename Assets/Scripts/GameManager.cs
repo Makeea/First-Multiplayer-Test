@@ -62,8 +62,28 @@ public class GameManager : MonoBehaviourPunCallbacks
         return players.First(x => x.id == playerId);
     }
 
-    public PlayerController GetPlayer(GameObject playerObject)
+    public PlayerController GetPlayer(GameObject playerObj)
     {
-        return players.First(x => x.gameObject == playerObject);
+        return players.First(x => x.gameObject == playerObj);
+    }
+
+    [PunRPC]
+    public void GiveHat(int playerId, bool initialGive = false)
+    {
+        // remove the hat from the currently hatted player
+        if (!initialGive)
+            GetPlayer(playerWithHat).SetHat(false);
+
+        // give the hat to the new player
+        playerWithHat = playerId;
+        GetPlayer(playerId).SetHat(true);
+        hatPickupTime = Time.time;
+    }
+
+    // player able to take hat at this time?
+    public bool CanGetHat()
+    {
+        if (Time.time > hatPickupTime + invincibleDuration) return true;
+        else return false;
     }
 }
