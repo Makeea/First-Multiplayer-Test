@@ -253,6 +253,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
+  - {fileID: 2579671607732094086}
   - {fileID: 2579671607732094093}
   viewIdField: 0
   InstantiationId: 1
@@ -286,10 +287,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   moveSpeed: 5
-  jumpSpeed: 8
+  jumpForce: 0
   hatObject: {fileID: 2579671607272300850}
   curHatTime: 0
   rig: {fileID: 2579671607732094083}
+  meshRenderer: {fileID: 0}
+  photonView: {fileID: 0}
 --- !u!1 &2579671608019167490
 GameObject:
   m_ObjectHideFlags: 0

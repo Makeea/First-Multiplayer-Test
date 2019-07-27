@@ -8,91 +8,88 @@ using System.Linq;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     [Header("Stats")]
-    public bool gameEnded = false;
-    public float timeToWin;
-    public float invincibleDuration;
-    private float hatPickupTime;
+    [HideInInspector]
+    public bool gameEnded = false;              
+    public float timeToWin;                              
+    public float invincibleDuration;                   
+    private float hatPickupTime;                       
 
     [Header("Players")]
-    public string playerPrefabLocation;
-    public Transform[] spawnPoints;
-    public PlayerController[] players;
-    public int playerWithHat;
-    private int playersInGame;
+    public string playerPrefabLocation;            
+    public Transform[] spawnPoints;              
+    [HideInInspector]
+    public PlayerController[] players;          
+    [HideInInspector]
+    public int playerWithHat;                        
+    private int playersInGame;                      
 
-    //instance
+    [Header("Components")]
+    public PhotonView photonView;
+
     public static GameManager instance;
 
-    void Awake()
+    void Awake ()
     {
         instance = this;
     }
 
-    void Start()
+    void Start ()
     {
         players = new PlayerController[PhotonNetwork.PlayerList.Length];
         photonView.RPC("ImInGame", RpcTarget.AllBuffered);
     }
 
     [PunRPC]
-    void ImInGame()
+    void ImInGame ()
     {
         playersInGame++;
 
-        // is all players in the scene?
-        if (playersInGame == PhotonNetwork.PlayerList.Length)
+        if(playersInGame == PhotonNetwork.PlayerList.Length)
             SpawnPlayer();
     }
-
-    // spawns a player and initilizes them
-    void SpawnPlayer()
+    
+    void SpawnPlayer ()
     {
-        // Instantiates the player across the network
-        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity);
+        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity, 0);
 
-        // add PlayerControllor script to each player
         PlayerController playerScript = playerObj.GetComponent<PlayerController>();
 
-        // initialize the player
         playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
 
-    public PlayerController GetPlayer(int playerId)
+    public bool CanGetHat ()
     {
-        return players.First(x => x.id == playerId);
-    }
-
-    public PlayerController GetPlayer(GameObject playerObj)
-    {
-        return players.First(x => x.gameObject == playerObj);
+        if(Time.time > hatPickupTime + invincibleDuration) return true;
+        else return false;
     }
 
     [PunRPC]
-    public void GiveHat(int playerId, bool initialGive = false)
+    public void GiveHat (int playerId, bool initialGive = false)
     {
-        // remove the hat from the currently hatted player
-        if (!initialGive)
+        if(!initialGive)
             GetPlayer(playerWithHat).SetHat(false);
 
-        // give the hat to the new player
         playerWithHat = playerId;
         GetPlayer(playerId).SetHat(true);
         hatPickupTime = Time.time;
     }
 
-    // player able to take hat at this time?
-    public bool CanGetHat()
+    public PlayerController GetPlayer (int playerId)
     {
-        if (Time.time > hatPickupTime + invincibleDuration) return true;
-        else return false;
+        return players.First(x => x.id == playerId);
+    }
+
+    public PlayerController GetPlayer (GameObject playerObject)
+    {
+        return players.First(x => x.gameObject == playerObject);
     }
 
     [PunRPC]
-    void GameWon(int playerId)
+    void WinGame (int playerId)
     {
         gameEnded = true;
         PlayerController player = GetPlayer(playerId);
-        //show who won
+        GameUI.instance.SetWinText(player.photonPlayer.NickName);
 
         Invoke("GoBackToMenu", 3.0f);
     }

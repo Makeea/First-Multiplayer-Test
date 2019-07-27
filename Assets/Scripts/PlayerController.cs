@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("Info")]
     public float moveSpeed;
-    public float jumpSpeed;
+    public float jumpForce;
     public GameObject hatObject;
 
     [HideInInspector]
@@ -19,10 +19,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("Components")]
     public Rigidbody rig;
+    public MeshRenderer meshRenderer;
+    public PhotonView photonView;
     public Player photonPlayer;
 
     [PunRPC]
-    public void Initialize (Player player)
+    public void Initialize(Player player)
     {
         photonPlayer = player;
         id = player.ActorNumber;
@@ -32,36 +34,34 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (id == 1)
             GameManager.instance.GiveHat(id, true);
 
-
         if (!photonView.IsMine)
             rig.isKinematic = true;
     }
 
-    private void Update()
+    void Update()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            if(curHatTime > GameManager.instance.timeToWin&& !GameManager.instance.gameEnded)
+            if (curHatTime >= GameManager.instance.timeToWin && !GameManager.instance.gameEnded)
             {
                 GameManager.instance.gameEnded = true;
-                GameManager.instance.photonView.RPC("GameWon", RpcTarget.All, id);
+                GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
             }
         }
 
-        if(photonView.IsMine)
+        if (photonView.IsMine)
         {
             Move();
 
             if (Input.GetKeyDown(KeyCode.Space))
                 TryJump();
 
-            // track amount of time on head
             if (hatObject.activeInHierarchy)
                 curHatTime += Time.deltaTime;
         }
     }
 
-    private void Move()
+    void Move()
     {
         float x = Input.GetAxis("Horizontal") * moveSpeed;
         float z = Input.GetAxis("Vertical") * moveSpeed;
@@ -69,39 +69,32 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         rig.velocity = new Vector3(x, rig.velocity.y, z);
     }
 
-    // are we on the ground and if so jump
     void TryJump()
     {
-        // raycase that shoots below us
         Ray ray = new Ray(transform.position, Vector3.down);
 
-        // if we hit something then we are on ground - start jumping
-        if(Physics.Raycast(ray, 0.7f))
+        if (Physics.Raycast(ray, 0.7f))
         {
-            rig.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+            rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
-    // could replace for something else. maybe not a hat but a bomb.
+
     public void SetHat(bool hasHat)
     {
         hatObject.SetActive(hasHat);
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision col)
     {
         if (!photonView.IsMine)
             return;
 
-        // did we hit another player?
-        if (collision.gameObject.CompareTag("Player"))
+        if (col.gameObject.CompareTag("Player"))
         {
-            // do they have the hat?
-            if(GameManager.instance.GetPlayer(collision.gameObject).id == GameManager.instance.playerWithHat)
+            if (GameManager.instance.GetPlayer(col.gameObject).id == GameManager.instance.playerWithHat)
             {
-                // can we get the hat?
-                if(GameManager.instance.CanGetHat())
+                if (GameManager.instance.CanGetHat())
                 {
-                    // give us the hat
                     GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
                 }
             }
