@@ -89,17 +89,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (!photonView.IsMine)
             return;
 
+       
         if (col.gameObject.CompareTag("Player"))
         {
+            
             if (GameManager.instance.GetPlayer(col.gameObject).id == GameManager.instance.playerWithHat)
             {
+                
                 if (GameManager.instance.CanGetHat())
                 {
-                    GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
+                   GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
                 }
             }
         }
     }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
