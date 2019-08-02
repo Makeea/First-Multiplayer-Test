@@ -84,21 +84,22 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         hatObject.SetActive(hasHat);
     }
 
-    void OnCollisionEnter(Collision col)
+void OnCollisionEnter(Collision col)
     {
-        if (!photonView.IsMine)
+        if (photonView.IsMine)
             return;
 
-       
+        // did we hit player?
         if (col.gameObject.CompareTag("Player"))
         {
-            
+            // do they have the hat?
             if (GameManager.instance.GetPlayer(col.gameObject).id == GameManager.instance.playerWithHat)
             {
-                
+                // can we get the hat?
                 if (GameManager.instance.CanGetHat())
                 {
-                   GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
+                    // give us the hat
+                    GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
                 }
             }
         }
